@@ -32,9 +32,10 @@ editor_options:
   chunk_output_type: console
 ---
 
+
 ```{r}
-#| echo: false
-#| eval: true
+#| label: load_package
+#| include: false
 
 library(ggplot2)
 library(scales)
