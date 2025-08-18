@@ -1,0 +1,645 @@
+---
+title: "An introduction to $p$-value functions"
+author:
+  - name: "Dr. Denis Infanger"
+    orcid: 0000-0001-9028-7110
+    email: denis.infanger@unibas.ch
+# institute: "Departement für Sport, Bewegung und Gesundheit (DSBG)<br>Universität Basel"
+date: 2025-10-01
+date-format: "DD MMMM YYYY"
+format:
+  revealjs:
+    slide-number: c/t
+    center-title-slide: true
+    # width: 1920
+    # height: 1080
+    smaller: true
+    transition: none
+    incremental: false
+    auto-stretch: false
+    code-summary: "Code"
+    code-fold: true
+    # fig-dpi: 300
+    theme: [default, styles.scss]
+  html:
+    mainfont: "Segoe UI"
+    code-tools:
+      source: true
+      toggle: false
+      caption: none
+bibliography: bibliography.bib
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| echo: false
+#| eval: true
+
+library(ggplot2)
+library(scales)
+library(metafor)
+library(pvaluefunctions)
+```
+
+## My promises
+
+<!-- After this [presentation]{style="background-color:#5CC3F0;"}, you will ... -->
+
+After this presentation, you will ...
+
+::: incremental
+-   know what $p$-value functions are
+-   know how $p$-value functions are constructed
+-   be able to interpret $p$-value functions correctly
+-   be able to use $p$-value functions to improve statistical reasoning
+-   be able to use $p$-value functions to compare study results
+:::
+
+## Research has a problem
+
+![<https://doi.org/10.1371/journal.pmed.0020124>](images/ioannidis.png){width="52%" fig-align="left"}
+
+## 
+
+![](images/retire_signif_1.png){.absolute top="0" left="00" width="582.3"}
+
+![](images/retire_signif_2.png){.absolute top="150" left="400" width="560.7"}
+
+![](images/retire_signif_3.png){.absolute top="410" left="00" width="850.32"}
+
+## Many alternatives to classical frequentist statistics and hypothesis testing in particular have been proposed
+
+::: incremental
+-   Bayesian statistics
+-   Lowering significance threshold from $0.05$ to $0.005$
+-   Focus on effect sizes and uncertainty intervals
+-   *My opinion:* $P$-values are here to stay
+    -   Improve interpretation of tools that we have
+    -   $P$-value functions: Graphical tool to achieve that
+:::
+
+## $P$-values
+
+::: {.fragment .callout-important title="Definition"}
+$P$ is the probability under the null hypothesis of obtaining a test statistic at least as extreme as the one obtained. "Extreme" means farther from the null value.
+:::
+
+::::: columns
+::: {.fragment .column width="30%"}
+![Image adapted [from here.](https://bookdown.org/charlotte_micheloud93/Clinical_Biostatistics/statistical-significance-and-sample-size-calculations.html#the-null-hypothesis-and-statistical-significance)](images/p_value_scale.png){width="90%" fig-align="left"}
+:::
+
+::: {.fragment .column width="70%"}
+Informally, $p$-values are a continuous measure of *compatibility* between the data and a hypothesis, given a set of background information (for details, see [here](https://doi.org/10.1186/s12874-020-01105-9)).
+:::
+:::::
+
+## Confidence intervals and their relation with $p$-values
+
+::::: columns
+::: {.column width="60%"}
+```{r}
+#| label: confint
+#| fig-cap: "95% Confidence interval for arbitrary parameter"
+#| fig-align: left
+#| echo: true
+
+df <- data.frame(est = 0.5, lwr = 0.5 - 0.75, upr = 0.5 + 0.75)
+theme_set(theme_bw())
+ggplot(df, aes(x = est, y = 0)) + 
+  geom_vline(xintercept = 0, linetype = 2, linewidth = 0.75) +
+  geom_point(size = 4) +
+  geom_errorbarh(aes(xmin = lwr, xmax = upr), height = 0, linewidth = 1) +
+  labs(
+    x = "Units of measurement"
+    , y = ""
+  ) +
+  scale_x_continuous(limits = c(-2, 2), breaks = scales::pretty_breaks(n = 10)) +
+  theme(
+    axis.title.y=element_text(colour = "black", size = 19, hjust = 0.5, margin=margin(0,12,0,0)),
+    axis.title.x=element_text(colour = "black", size=19, margin=margin(10,0,0,0)),
+    # axis.title.y=element_text(size=15,hjust=0.5, vjust=1),
+    axis.text.x=element_text(colour = "black", size=15),
+    axis.text.y=element_blank(),
+    legend.position="top",
+    legend.text=element_text(size=20),
+    legend.key.size = unit(3, "line"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.key=element_blank(),
+    plot.title = element_text(face = "bold"),
+    legend.title=element_text(size=20, face = "bold"),
+    strip.text.x=element_text(size=20)
+    , axis.ticks.x=element_blank()
+    , axis.ticks.y=element_blank()
+  )
+```
+:::
+
+::: {.column .incremental width="40%"}
+-   The confidence interval (CI) displays the values that are compatible with the data and the model.
+-   All values within the CI have $p>0.05$ (are not "significant").
+-   Values outside the CI have $p\leq 0.05$ (are "significant").
+-   **Q:** Values at the edge of the CI have? [$p=0.05$ (for a 95%-CI)]{.fragment}
+:::
+:::::
+
+## 
+
+![<https://doi.org/10.1136/bjsports-2016-096723>](images/Stamatakis_paper.png){width="90%"}
+
+## Question
+
+In your opinion, do the results justify the conclusion that there was *no association* between sitting time and diabetes? Why or why not?
+
+![](images/Stamatakis_table.png){width="100%"}
+
+## Confidence intervals
+
+::: incremental
+-   Confidence intervals: Range of supported/compatible values given the data.
+-   But:
+    -   Are all values inside the CI equally well supported?
+    -   Are all values outside the CI equally badly supported?
+    -   Why does the support of values decrease sharply at the edges of the CI?
+:::
+
+## 95% confidence interval for Stamatakis et al. (2017)
+
+![](images/ci_wrong.png){width="85%"}
+
+## Some ideas for improvement
+
+::: incremental
+-   Plot multiple confidence intervals together:
+    -   99%
+    -   95%
+    -   90%
+    -   ...
+-   Calculate and plot $p$-values for other values than $1$ (the usual null value for ratio measures):
+    -   For example: $P$-value for $H_0:$ HR = $1.5$ is $0.0975$.
+:::
+
+## Plot multiple confidence intervals for the same estimate
+
+```{r}
+#| label: stamatakis_discrete
+#| fig-cap: ""
+#| fig-align: left
+#| echo: true
+#| out-width: 7.2in
+#| fig-asp: 0.706
+
+# Stamatakis et al. (2017)
+
+est <- log(1.19)
+se <- 0.1397
+
+alphas <- c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
+
+z_vals <- qnorm(1 - alphas/2)
+
+lwr <- est - z_vals*se
+upr <- est + z_vals*se
+
+plot_dat <- data.frame(
+  pointest = exp(est)
+  , lwr = exp(lwr)
+  , upr = exp(upr)
+  , alphasrev = 1 - alphas
+  , alphas = alphas
+)
+
+text_frame <- data.frame(
+  y = c(plot_dat$alphasrev, 0)
+  , x = c(plot_dat$lwr, plot_dat$pointest[1])
+)
+
+text_frame$label <- paste0(text_frame$y*100, "%")
+
+scaleFUN <- function(x) sprintf("%.2f", x)
+
+theme_set(theme_bw())
+p <- ggplot(plot_dat, aes(y = alphasrev, x = pointest)) +
+  geom_blank() +
+  geom_vline(xintercept = 1, linetype = 2, linewidth = 0.5) +
+  geom_point(aes(x = pointest, y = 0), size = 3) +
+  geom_point(aes(x = lwr), size = 3) +
+  geom_point(aes(x = upr), size = 3) +
+  geom_segment(aes(x = lwr, y = alphasrev, xend = upr, yend = alphasrev), linewidth = 0.75) + 
+  # geom_vline(xintercept = 1, linetype = 2, size = 0.6) +
+  xlab("Hazard ratio") +
+  ylab(expression("Confidence level "*(1 - alpha))) +
+  # ylab("") +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10), trans = "log", limits = c(0.8, 1.72)) +
+  scale_y_continuous(breaks = seq(0, 1, 0.05), labels=scaleFUN, trans = "reverse") +
+  # scale_colour_manual(values = c("#C16700", "#008FD0"),  name = "") +
+  theme(
+    axis.title.y=element_text(colour = "black", size = 19, hjust = 0.5, margin=margin(0,12,0,0)),
+    axis.title.x=element_text(colour = "black", size=20),
+    # axis.title.y=element_text(size=15,hjust=0.5, vjust=1),
+    axis.text.x=element_text(colour = "black", size=15),
+    axis.text.y=element_text(colour = "black", size=15),
+    # plot.margin=unit(c(2,2,2,2,2),"line"),
+    legend.position="top",
+    legend.text=element_text(size=20),
+    legend.key.size = unit(3, "line"),
+    panel.grid.minor = element_blank(),
+    # panel.grid.major = element_line(colour=grey(0.8), size=0.5),
+    legend.key=element_blank(),
+    plot.title = element_text(face = "bold"),
+    legend.title=element_text(size=20, face = "bold"),
+    # legend.key.width=unit(.01,"npc"),
+    # legend.key.height=unit(.025,"npc"),
+    # strip.background=element_rect(fill="white")
+    strip.text.x=element_text(size=20)
+    , axis.ticks.x=element_blank()
+    # , axis.ticks.y=element_blank()
+  ) +
+  geom_label(
+    data = text_frame
+    , mapping = aes(x = x, y = y, label = label)
+    , fill = "white"
+    , inherit.aes = FALSE
+    , label.size = 0.5
+    , parse = FALSE
+    , size = 5.5
+    , hjust = 1.3
+  )
+
+p
+```
+
+## Plot *all* confidence intervals, calculate *all* $p$-values
+
+```{r}
+#| label: stamatakis_continuous
+#| fig-cap: ""
+#| fig-align: left
+#| echo: true
+#| out-width: 8in
+#| fig-asp: 0.706
+
+# Now "true" p-value function
+
+stama <- conf_dist(
+  estimate = c(
+    0.1730998 # Stamatakis total sitting time
+    # , log(1.10) # Petersen total sitting time (both sexes)
+  )
+  , stderr = c(
+    # 0.1336387
+    0.1397
+  )
+  , type = "coxreg"
+  , plot_type = "p_val"
+  , n_values = 1e4L
+  , conf_level = c(0.95)
+  , null_values = log(c(1))
+  , trans = "exp"
+  , alternative = "two_sided"
+  , log_yaxis = FALSE
+  , cut_logyaxis = 0.05
+  , xlab = "Hazard ratio"
+  , xlim = log(c(0.7, 1.9))
+  , together = FALSE
+  , plot_p_limit = 1-0.999
+  , plot_counternull = FALSE
+)
+
+```
+
+## A $p$-value function
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| label: stamatakis_continuous2
+#| fig-cap: ""
+#| fig-align: left
+#| echo: false
+#| out-width: 5.5in
+#| fig-asp: 0.706
+
+# Now "true" p-value function
+
+stama <- conf_dist(
+  estimate = c(
+    0.1730998 # Stamatakis total sitting time
+    # , log(1.10) # Petersen total sitting time (both sexes)
+  )
+  , stderr = c(
+    # 0.1336387
+    0.1397
+  )
+  , type = "coxreg"
+  , plot_type = "p_val"
+  , n_values = 1e4L
+  , conf_level = c(0.95)
+  , null_values = log(c(1))
+  , trans = "exp"
+  , alternative = "two_sided"
+  , log_yaxis = FALSE
+  , cut_logyaxis = 0.05
+  , xlab = "Hazard ratio"
+  , xlim = log(c(0.7, 1.9))
+  , together = FALSE
+  , plot_p_limit = 1-0.999
+  , plot_counternull = FALSE
+)
+
+```
+:::
+
+::: {.column width="50%"}
+-   *All* possible confidence intervals (all confidence levels)
+-   *All* possible $p$-values (two- and one-sided)
+:::
+:::::
+
+## The width of the $p$-value function indicates the *precision* of the estimate
+
+![](images/stamatakis_width.png){width="65%"}
+
+## We can read off any $p$-value from the $p$-value function
+
+![](images/stamatakis_pval.png){width="65%"}
+
+## Null misinterpretation
+
+![<https://doi.org/10.1007/s10654-016-0149-3>](images/greenland_nullmisinterpretation.png){width="60%" fig-align="left"}
+
+## A better summary
+
+![](images/Stamatakis_table.png){width="100%" fig-align="left"}
+
+> "Our results are most compatible at the 95% level with an effect of high versus low amounts of sitting anywhere from an 8% hazard reduction to 55% increase in the hazard of diabetes."
+
+## 
+
+![<https://doi.org/10.1371/journal.pone.0199493>](images/walsh.png){width="85%" fig-align="left"}
+
+[*Implication:* Ibuprofen is safe in terms of renal adverse effects (AE).]{.fragment}
+
+## Walsh et al. (2018): Safety of Ibuprofen
+
+::::: columns
+::: {.column width="70%"}
+```{r}
+#| label: walsh
+#| fig-cap: ""
+#| fig-align: left
+#| echo: true
+#| out-width: 8in
+#| fig-asp: 0.706
+
+walsh <- conf_dist(
+  estimate = c(
+    log(1.84)
+  )
+  , stderr = c(
+    0.526
+  )
+  , type = "general_z"
+  , plot_type = "p_val"
+  , n_values = 1e4L
+  , conf_level = c(0.95)
+  , null_values = log(c(1))
+  , trans = "exp"
+  , alternative = "two_sided"
+  , log_yaxis = FALSE
+  , cut_logyaxis = 0.05
+  , xlab = "Incidence rate ratio"
+  , xlim = log(c(0.5, 6))
+  , together = FALSE
+  , plot_p_limit = 1-0.9999
+  , plot_counternull = FALSE
+)
+
+```
+:::
+
+::: {.column .fragment width="30%"}
+How can we find the $p$-value of the hypothesis<br>$H_0:$ IRR = $1$ from the plot? [$p \approx 0.25$]{.fragment}
+:::
+:::::
+
+## Walsh et al. (2018): Better conclusion
+
+::: incremental
+-   The region of high (95%) compatibility for the incidence rate ratio: 0.66 to 5.19.
+-   Anything from a 34% rate reduction up to a fivefold increase!
+:::
+
+. . .
+
+> "Our study lacked sufficient information to reach useful inference about adverse renal events comparing ibuprofen to acetaminophen alone."
+
+# Comparing studies using $p$-value functions
+
+## 
+
+![<https://doi.org/10.1056/nejmoa041152>](images/stampfer.png){width="70%" fig-align="left"}
+
+. . .
+
+*Implication:* No benefit for women with high alcohol consumption.
+
+## 
+
+```{r}
+#| label: stampfer
+#| fig-cap: ""
+#| fig-align: left
+#| echo: true
+#| out-width: 8.5in
+#| fig-asp: 0.706
+
+stampfer <- conf_dist(
+  estimate = c(
+    log(0.81)
+    , log(0.82)
+  )
+  , stderr = c(
+    0.0704862
+    , 0.163609
+  )
+  , type = "general_z"
+  , plot_type = "p_val"
+  , est_names = c("Moderate intake", "High intake")
+  , n_values = 1e4L
+  , conf_level = c(0.95)
+  , null_values = log(c(1))
+  , trans = "exp"
+  , alternative = "two_sided"
+  , log_yaxis = FALSE
+  , cut_logyaxis = 0.05
+  , xlab = "Relative risk for cognitive impairment"
+  , xlim = log(c(0.4, 1.5))
+  , together = TRUE
+  , plot_p_limit = 1-0.9999
+  , plot_counternull = FALSE
+)
+
+```
+
+## 
+
+![](images/stampfer_pointest.png){width="80%" fig-align="left"}
+
+## 
+
+![](images/stampfer_width.png){width="80%" fig-align="left"}
+
+## Stampfer et al. (2005): A better summary
+
+::: incremental
+-   No basis to infer that the effect size differs for moderate and heavy drinkers.
+-   The hypothesis that is most compatible with the data is almost the same in both groups.
+-   Lack of significance was driven by lower precision for heavy drinkers.
+:::
+
+## NSAIDs and atrial fibrillation risk
+
+![<https://doi.org/10.1016/j.ijcard.2014.09.205>](images/nsaids.png){width="80%" fig-align="left"}
+
+::: incremental
+-   [Schmidt et al. (2011)](https://doi.org/10.1136/bmj.d3450): RR = $1.20$ (95%-CI: $1.09$ to $1.33$) ("significant")
+-   [Chao et al. (2013)](https://doi.org/10.1016/j.ijcard.2012.09.058): RR = $1.20$ (95%-CI: $0.97$ to $1.48$) ("not significant")
+:::
+
+## 
+
+```{r}
+#| label: schmidt_chao
+#| fig-cap: ""
+#| fig-align: left
+#| echo: true
+#| out-width: 8.5in
+#| fig-asp: 0.706
+
+schmidt <- conf_dist(
+  estimate = c(
+    log(1.20)
+    , log(1.20)
+  )
+  , stderr = c(
+    0.107002
+    , 0.0524792
+  )
+  , type = "general_z"
+  , plot_type = "p_val"
+  , est_names = c("Chao et al. (2013)", "Schmidt et al. (2011)")
+  , n_values = 1e4L
+  # , conf_level = c(0.95)
+  , null_values = log(c(1))
+  , trans = "exp"
+  , alternative = "two_sided"
+  , log_yaxis = FALSE
+  , cut_logyaxis = 0.05
+  , xlab = "Risk ratio"
+  , xlim = log(c(0.9, 1.55))
+  , together = TRUE
+  , plot_p_limit = 1-0.9999
+  , plot_counternull = FALSE
+)
+
+```
+
+## 
+
+```{r}
+#| label: schmidt_chao_meta
+#| fig-cap: ""
+#| fig-align: left
+#| echo: true
+#| out-width: 8.5in
+#| fig-asp: 0.706
+
+manal <- metafor::rma(
+  yi = c(log(1.20), log(1.20))
+  , vi = c(0.107002 , 0.0524792)^2
+  , method = "REML"
+  # , test = "knha"
+)
+
+schmidt_meta <- conf_dist(
+  estimate = c(
+    log(1.20)
+    , log(1.20)
+    , manal$b
+  )
+  , stderr = c(
+    0.107002
+    , 0.0524792
+    , manal$se
+  )
+  , type = "general_z"
+  , plot_type = "p_val"
+  , est_names = c("Chao et al. (2013)", "Schmidt et al. (2011)", "Meta-Analyis")
+  , n_values = 1e4L
+  # , conf_level = c(0.95)
+  , null_values = log(c(1))
+  , trans = "exp"
+  , alternative = "two_sided"
+  , log_yaxis = FALSE
+  , cut_logyaxis = 0.05
+  , xlab = "Risk ratio"
+  , xlim = log(c(0.9, 1.55))
+  , together = TRUE
+  , plot_p_limit = 1-0.9999
+  , plot_counternull = FALSE
+)
+
+```
+
+## Summary $p$-value functions
+
+::: incremental
+-   Display all possible confidence intervals/$p$-values
+-   Tip: Point estimate
+-   Width: Determined by standard error (precision)
+-   Standard error can be extracted from confidence intervals if not provided.
+-   Aliases: Confidence curve, compatibility curve, consonance curve.
+:::
+
+## Literature
+
+::::: columns
+::: {.column width="65%"}
+![](images/infanger19.png){width="100%" fig-align="left"}
+:::
+
+::: {.column width="35%"}
+<https://doi.org/10.1002/sim.8293>
+:::
+:::::
+
+## Software: R package [`pvaluefunctions`](https://cran.r-project.org/package=pvaluefunctions)
+
+![](images/cran_package.png){width="90%" fig-align="left"}
+
+<https://cran.r-project.org/package=pvaluefunctions>
+
+<https://github.com/DInfanger/pvaluefunctions>
+
+## Take-Home-Messages
+
+::: incremental
+-   The practice of dichotomizing results into "significant" and "not significant" is not informative and should probably stop.
+-   Focus on effect sizes and confidence/compatibility intervals.
+-   Create $p$-value functions to summarize the available evidence:
+    -   Values with high and low compatibility with the data.
+    -   To compare evidence from different studies.
+-   Never say that "we found no effect/association" or "there was no difference" when $p>0.05$ [@greenland_statistical_2016]
+:::
+
+## Recommended reading
+
+::: {#refs style="font-size: 70%;"}
+---
+nocite: |
+  @*
+---
+:::

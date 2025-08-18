@@ -1,0 +1,13 @@
+/*-- scss:defaults --*/
+
+$presentation-title-slide-text-align: left;
+
+$presentation-h1-font-size: 2em;
+$presentation-h2-font-size: 1.2em;
+
+.reveal .slide-number > a[href*='title-slide'] {
+  display: none;
+}
+
+// fonts
+$font-family-monospace: "Consolas", monospace !default;
