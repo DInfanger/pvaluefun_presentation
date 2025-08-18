@@ -12,3 +12,7 @@ My R package `pvaluefunctions` is available on [CRAN](https://cran.r-project.org
 library(devtools)
 install_github(DInfanger/pvaluefunctions)
 ```
+
+For more information about *p*-value functions, I recommend reading our [introductory paper](https://doi.org/10.1002/sim.8293) on the topic:
+
+Infanger D, Schmidt-Trucksäss A. (2019): P value functions: An underused method to present research results and to promote quantitative reasoning. *Stat Med.* 38, 4189-4197. doi: [10.1002/sim.8293](https://doi.org/10.1002/sim.8293).
