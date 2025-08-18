@@ -861,6 +861,26 @@ Dr.&nbsp;Denis Infanger <a href="https://orcid.org/0000-0001-9028-7110" class="q
 <p><a href="https://cran.r-project.org/package=pvaluefunctions" class="uri">https://cran.r-project.org/package=pvaluefunctions</a></p>
 <p><a href="https://github.com/DInfanger/pvaluefunctions" class="uri">https://github.com/DInfanger/pvaluefunctions</a></p>
 </section>
+<section id="software-r-package-parameters" class="slide level2">
+<h2>Software: R package <a href="https://easystats.github.io/parameters/"><code>parameters</code></a></h2>
+<p>Allows the creation of <span class="math inline">\(p\)</span>-value functions directly from models using the function <a href="https://easystats.github.io/parameters/reference/p_function.html"><code>p_function</code></a>. Here is an example from a linear regression model:</p>
+<div class="cell" data-layout-align="left">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> <span class="fu">as.factor</span>(gear) <span class="sc">+</span> am, <span class="at">data =</span> mtcars)</span>
+<span id="cb8-2"><a href=""></a>p_curve <span class="ot">&lt;-</span> <span class="fu">p_function</span>(mod, <span class="at">ci_levels =</span> <span class="fu">c</span>(<span class="at">emph =</span> <span class="fl">0.95</span>))</span>
+<span id="cb8-3"><a href=""></a></span>
+<span id="cb8-4"><a href=""></a><span class="fu">plot</span>(p_curve, <span class="at">n_columns =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-left">
+<figure>
+<p><img data-src="pvaluefun_presentation_files/figure-revealjs/parameters_example-1.png" class="quarto-figure quarto-figure-left" style="width:7in"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 <section id="take-home-messages" class="slide level2">
 <h2>Take-Home-Messages</h2>
 <ul>

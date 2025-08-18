@@ -41,6 +41,7 @@ library(ggplot2)
 library(scales)
 library(metafor)
 library(pvaluefunctions)
+library(parameters)
 ```
 
 ## My promises
@@ -624,6 +625,25 @@ schmidt_meta <- conf_dist(
 <https://cran.r-project.org/package=pvaluefunctions>
 
 <https://github.com/DInfanger/pvaluefunctions>
+
+## Software: R package [`parameters`](https://easystats.github.io/parameters/)
+
+Allows the creation of $p$-value functions directly from models using the function [`p_function`](https://easystats.github.io/parameters/reference/p_function.html). Here is an example from a linear regression model:
+
+```{r}
+#| label: parameters_example
+#| echo: true
+#| fig-align: left
+#| out-width: 7in
+#| fig-asp: 0.706
+
+mod <- lm(mpg ~ wt + as.factor(gear) + am, data = mtcars)
+p_curve <- p_function(mod, ci_levels = c(emph = 0.95))
+
+plot(p_curve, n_columns = 2)
+
+```
+
 
 ## Take-Home-Messages
 
