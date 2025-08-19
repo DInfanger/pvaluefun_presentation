@@ -20,6 +20,8 @@ format:
     code-summary: "Code"
     code-fold: true
     # fig-dpi: 300
+    embed-resources: true
+    preview-links: auto
     theme: [default, styles.scss]
   html:
     mainfont: "Segoe UI"
