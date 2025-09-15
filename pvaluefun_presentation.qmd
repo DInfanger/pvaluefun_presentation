@@ -35,7 +35,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-
 ```{r}
 #| label: load_package
 #| include: false
@@ -57,7 +56,7 @@ After this presentation, you will ...
 -   know what $p$-value functions are
 -   know how $p$-value functions are constructed
 -   be able to interpret $p$-value functions correctly
--   be able to use $p$-value functions to improve statistical reasoning
+-   be able to use $p$-value functions to improve statistical and quantitative reasoning
 -   be able to use $p$-value functions to compare study results
 :::
 
@@ -109,7 +108,6 @@ Informally, $p$-values are a continuous measure of *compatibility* between the d
 -   But: You can calculate $p$-values for other null values too!
 -   Example: $\operatorname{H}_{0}:\theta = \color{red}{2.5}$ vs. $\operatorname{H}_{1}:\theta\neq \color{red}{2.5}$.
 :::
-
 
 ## Confidence intervals and their relation to $p$-values
 
@@ -454,6 +452,77 @@ How can we find the $p$-value of the hypothesis<br>$\operatorname{H}_0:$ IRR = $
 
 > "Our study lacked sufficient information to reach useful inference about adverse renal events comparing ibuprofen to acetaminophen alone."
 
+## Does high power plus nonsignificance support the null?
+
+|                | New treatment | Placebo |
+|----------------|---------------|---------|
+| Adverse events | 48            | 32      |
+| Total          | 1000          | 1000    |
+|                |               |         |
+
+: Hypothetical randomized trial data {#tbl-greenland12}
+
+::: incremental
+-   High power for $\operatorname{RR} = 2$ at $\alpha = 0.05$ (over 85%)
+-   $\widehat{\operatorname{RR}} = 1.50$ (95%-CI: $0.97$ to $2.33$)
+-   $P = 0.07$ for $\operatorname{H}_{0}: \operatorname{RR} = 1$
+-   Does this mean that the study supports that new treatment is equal to placebo in terms of AEs? [No!]{.fragment style="color:red;"}
+:::
+
+## Does high power plus nonsignificance support the null?
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| label: greenland12
+#| fig-cap: ""
+#| fig-align: left
+#| echo: true
+#| out-width: 8in
+#| fig-asp: 0.706
+
+walsh <- conf_dist(
+  estimate = c(
+    0.405465108108164
+  )
+  , stderr = c(
+    0.2237931
+  )
+  , type = "general_z"
+  , plot_type = "p_val"
+  , n_values = 1e4L
+  , conf_level = c(0.95)
+  , null_values = log(c(1))
+  , trans = "exp"
+  , alternative = "two_sided"
+  , log_yaxis = FALSE
+  , cut_logyaxis = 0.05
+  , xlab = "Risk ratio"
+  # , xlim = log(c(0.5, 6))
+  , together = FALSE
+  , plot_p_limit = 1-0.9999
+  , plot_counternull = FALSE
+)
+
+```
+:::
+
+::: {.column width="50%"}
+Based on the results, do the data favor $\operatorname{RR} = 1$ or $\operatorname{RR} = 2$?
+
+::: incremental
+-   The point estimate is $1.5$: Closer to $2$ than to $1$ in proportional terms.
+-   $P$-value for $\operatorname{RR} = 2$ is $0.20$, 3 times the $p$-value for $\operatorname{RR} = 1$.
+-   $1$ is closer to lower CI limit than $2$ is to the upper limit (in proportional terms).
+:::
+
+[Summary: Despite "nonsignificance" and power approximating 90% for $\operatorname{RR} = 2$, the results favor $\operatorname{RR} = 2$ over $\operatorname{RR} = 1$! [@greenland_nonsignificance_2012]]{.fragment}
+
+
+:::
+:::::
+
+
 # Comparing studies using $p$-value functions
 
 ## 
@@ -659,7 +728,6 @@ p_curve <- p_function(mod, ci_levels = c(emph = 0.95))
 plot(p_curve, n_columns = 2)
 
 ```
-
 
 ## Take-Home-Messages
 
