@@ -7,6 +7,7 @@ author:
 # institute: "Departement für Sport, Bewegung und Gesundheit (DSBG)<br>Universität Basel"
 date: 2025-10-01
 date-format: "DD MMMM YYYY"
+csl: apa.csl
 format:
   revealjs:
     slide-number: c/t
