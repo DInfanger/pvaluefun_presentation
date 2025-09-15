@@ -79,7 +79,7 @@ After this presentation, you will ...
 -   Lowering significance threshold from $0.05$ to $0.005$
 -   Focus on effect sizes and uncertainty intervals
 -   *My opinion:* $P$-values are here to stay
-    -   Improve interpretation of tools that we have
+    -   Improve interpretation of tools that are used
     -   $P$-value functions: Graphical tool to achieve that
 :::
 
@@ -99,13 +99,24 @@ Informally, $p$-values are a continuous measure of *compatibility* between the d
 :::
 :::::
 
-## Confidence intervals and their relation with $p$-values
+## Just one $p$-value?
+
+::: incremental
+-   "The null hypothesis states that there is no effect/no difference." [No!]{.fragment style="color:red;"}
+-   $P$-values in papers often have implicit hypotheses: $\operatorname{H}_{0}:\theta = \color{red}{0}$ vs. $\operatorname{H}_{1}:\theta\neq \color{red}{0}$.
+-   In other words: The $p$-value is for a test against the *null value* of $0$.
+-   But: You can calculate $p$-values for other null values too!
+-   Example: $\operatorname{H}_{0}:\theta = \color{red}{2.5}$ vs. $\operatorname{H}_{1}:\theta\neq \color{red}{2.5}$.
+:::
+
+
+## Confidence intervals and their relation to $p$-values
 
 ::::: columns
 ::: {.column width="60%"}
 ```{r}
 #| label: confint
-#| fig-cap: "95% Confidence interval for arbitrary parameter"
+#| fig-cap: "95% Confidence interval for an arbitrary parameter"
 #| fig-align: left
 #| echo: true
 
@@ -145,7 +156,7 @@ ggplot(df, aes(x = est, y = 0)) +
 -   The confidence interval (CI) displays the values that are compatible with the data and the model.
 -   All values within the CI have $p>0.05$ (are not "significant").
 -   Values outside the CI have $p\leq 0.05$ (are "significant").
--   **Q:** Values at the edge of the CI have? [$p=0.05$ (for a 95%-CI)]{.fragment}
+-   **Q:** What's the $p$-value for the values at the edge of the CI? [$p=0.05$ (for a 95%-CI)]{.fragment}
 :::
 :::::
 
@@ -182,7 +193,7 @@ In your opinion, do the results justify the conclusion that there was *no associ
     -   90%
     -   ...
 -   Calculate and plot $p$-values for other values than $1$ (the usual null value for ratio measures):
-    -   For example: $P$-value for $H_0:$ HR = $1.5$ is $0.0975$.
+    -   For example: $P$-value for $\operatorname{H}_{0}:$ HR = $1.5$ is $0.0975$.
 :::
 
 ## Plot multiple confidence intervals for the same estimate
@@ -317,7 +328,7 @@ stama <- conf_dist(
 ## A $p$-value function
 
 ::::: columns
-::: {.column width="50%"}
+::: {.column width="60%"}
 ```{r}
 #| label: stamatakis_continuous2
 #| fig-cap: ""
@@ -356,7 +367,7 @@ stama <- conf_dist(
 ```
 :::
 
-::: {.column width="50%"}
+::: {.column width="40%"}
 -   *All* possible confidence intervals (all confidence levels)
 -   *All* possible $p$-values (two- and one-sided)
 :::
@@ -425,7 +436,9 @@ walsh <- conf_dist(
 :::
 
 ::: {.column .fragment width="30%"}
-How can we find the $p$-value of the hypothesis<br>$H_0:$ IRR = $1$ from the plot? [$p \approx 0.25$]{.fragment}
+How can we find the $p$-value of the hypothesis<br>$\operatorname{H}_0:$ IRR = $1$ from the plot? [$p \approx 0.25$]{.fragment}
+
+[**Q:** How would you summarize the results?]{.fragment}
 :::
 :::::
 
@@ -604,8 +617,8 @@ schmidt_meta <- conf_dist(
 -   Display all possible confidence intervals/$p$-values
 -   Tip: Point estimate
 -   Width: Determined by standard error (precision)
--   Standard error can be extracted from confidence intervals if not provided.
--   Aliases: Confidence curve, compatibility curve, consonance curve.
+-   Standard error can be extracted from confidence intervals or from $p$-value if not provided.
+-   Aliases: Confidence curve, compatibility curve, consonance curve, consonance function.
 :::
 
 ## Literature
@@ -650,7 +663,7 @@ plot(p_curve, n_columns = 2)
 ## Take-Home-Messages
 
 ::: incremental
--   The practice of dichotomizing results into "significant" and "not significant" is not informative and should probably stop.
+-   The practice of dichotomizing results into "significant" and "not significant" is not informative [@gelman_difference_2006].
 -   Focus on effect sizes and confidence/compatibility intervals.
 -   Create $p$-value functions to summarize the available evidence:
     -   Values with high and low compatibility with the data.
