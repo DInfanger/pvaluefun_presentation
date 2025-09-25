@@ -89,12 +89,12 @@ After this presentation, you will ...
 $P$ is the probability under the null hypothesis of obtaining a test statistic at least as extreme as the one obtained. "Extreme" means farther from the null value.
 :::
 
-::::: columns
-::: {.fragment .column width="30%"}
+::::: {.columns .fragment}
+::: {.column width="30%"}
 ![Image adapted [from here.](https://bookdown.org/charlotte_micheloud93/Clinical_Biostatistics/statistical-significance-and-sample-size-calculations.html#the-null-hypothesis-and-statistical-significance)](images/p_value_scale.png){width="90%" fig-align="left"}
 :::
 
-::: {.fragment .column width="70%"}
+::: {.column width="70%"}
 Informally, $p$-values are a continuous measure of *compatibility* between the data and a hypothesis, given a set of background information (for details, see [here](https://doi.org/10.1186/s12874-020-01105-9)).
 :::
 :::::
@@ -202,7 +202,7 @@ In your opinion, do the results justify the conclusion that there was *no associ
 #| fig-cap: ""
 #| fig-align: left
 #| echo: true
-#| out-width: 7.2in
+#| out-width: 7in
 #| fig-asp: 0.706
 
 # Stamatakis et al. (2017)
@@ -292,7 +292,7 @@ p
 #| fig-cap: ""
 #| fig-align: left
 #| echo: true
-#| out-width: 8in
+#| out-width: 7.8in
 #| fig-asp: 0.706
 
 # Now "true" p-value function
@@ -327,13 +327,13 @@ stama <- conf_dist(
 ## A $p$-value function
 
 ::::: columns
-::: {.column width="60%"}
+::: {.column width="65%"}
 ```{r}
 #| label: stamatakis_continuous2
 #| fig-cap: ""
 #| fig-align: left
 #| echo: false
-#| out-width: 5.5in
+#| out-width: 6.5in
 #| fig-asp: 0.706
 
 # Now "true" p-value function
@@ -366,7 +366,7 @@ stama <- conf_dist(
 ```
 :::
 
-::: {.column width="40%"}
+::: {.column width="35%"}
 -   *All* possible confidence intervals (all confidence levels)
 -   *All* possible $p$-values (two- and one-sided)
 :::
@@ -376,7 +376,7 @@ stama <- conf_dist(
 
 ![](images/stamatakis_width.png){width="65%"}
 
-## We can read off any $p$-value from the $p$-value function
+## We can read off the $p$-value for any null value from the $p$-value function
 
 ![](images/stamatakis_pval.png){width="65%"}
 
@@ -466,13 +466,13 @@ How can we find the $p$-value of the hypothesis<br>$\operatorname{H}_0:$ IRR = $
 -   High power for $\operatorname{RR} = 2$ at $\alpha = 0.05$ (over 85%)
 -   $\widehat{\operatorname{RR}} = 1.50$ (95%-CI: $0.97$ to $2.33$)
 -   $P = 0.07$ for $\operatorname{H}_{0}: \operatorname{RR} = 1$
--   Does this mean that the study supports that new treatment is equal to placebo in terms of AEs? [No!]{.fragment style="color:red;"}
+-   Does this mean that the study supports the conclusion that new treatment is equal to placebo in terms of AEs? [No!]{.fragment style="color:red;"}
 :::
 
 ## Does high power plus nonsignificance support the null?
 
 ::::: columns
-::: {.column width="50%"}
+::: {.column width="55%"}
 ```{r}
 #| label: greenland12
 #| fig-cap: ""
@@ -507,7 +507,7 @@ walsh <- conf_dist(
 ```
 :::
 
-::: {.column width="50%"}
+::: {.column width="45%"}
 Based on the results, do the data favor $\operatorname{RR} = 1$ or $\operatorname{RR} = 2$?
 
 ::: incremental
@@ -531,7 +531,7 @@ Based on the results, do the data favor $\operatorname{RR} = 1$ or $\operatornam
 
 . . .
 
-*Implication:* No benefit for women with high alcohol consumption.
+*Implication:* No association for women with high alcohol consumption or effect differs between moderate and high consumption.
 
 ## 
 
@@ -687,7 +687,7 @@ schmidt_meta <- conf_dist(
 -   Display all possible confidence intervals/$p$-values
 -   Tip: Point estimate
 -   Width: Determined by standard error (precision)
--   Standard error can be extracted from confidence intervals or from $p$-value if not provided.
+-   Standard error can be extracted from published confidence intervals or from $p$-value if not provided.
 -   Aliases: Confidence curve, compatibility curve, consonance curve, consonance function.
 :::
 
@@ -719,7 +719,7 @@ Allows the creation of $p$-value functions directly from models using the functi
 #| label: parameters_example
 #| echo: true
 #| fig-align: left
-#| out-width: 7in
+#| out-width: 6.6in
 #| fig-asp: 0.706
 
 mod <- lm(mpg ~ wt + as.factor(gear) + am, data = mtcars)
@@ -734,10 +734,20 @@ plot(p_curve, n_columns = 2)
 ::: incremental
 -   The practice of dichotomizing results into "significant" and "not significant" is not informative [@gelman_difference_2006].
 -   Focus on effect sizes and confidence/compatibility intervals.
--   Create $p$-value functions to summarize the available evidence:
+-   $P$-value functions:
+    -   are more informative than commonly used summaries of study results.
+    -   require minimal training because they show familiar measures ($p$-values and confidence intervals).
+:::
+
+## Take-Home-Messages
+
+::: incremental
+-   Create $p$-value functions to summarize the available evidence and improve statistical reasoning:
     -   Values with high and low compatibility with the data.
-    -   To compare evidence from different studies.
--   Never say that "we found no effect/association" or "there was no difference" when $p>0.05$ [@greenland_statistical_2016]
+    -   How informative was the study?
+    -   To compare evidence from different studies
+    -   Useful for meta-analyses [see @held_comparison_2025; and @rucker_beyond_2021].
+-   Never say that "we found no effect/association" or "there was no difference" when $p>0.05$ [@greenland_statistical_2016].
 :::
 
 ## Recommended reading
