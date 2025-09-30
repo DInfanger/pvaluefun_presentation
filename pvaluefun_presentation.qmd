@@ -636,6 +636,67 @@ schmidt <- conf_dist(
 
 ## 
 
+
+```{r}
+#| label: schmidt_chao_meta_preparation
+#| echo: false
+#| output: false
+
+library(ggplot2)
+
+# manal <- metafor::rma(
+#   yi = c(log(1.20), log(1.20))
+#   , vi = c(0.107002 , 0.0524792)^2
+#   , method = "REML"
+#   # , test = "knha"
+# )
+
+schmidt_meta <- conf_dist(
+  estimate = c(
+    log(1.20)
+    , log(1.20)
+    # , manal$b
+  )
+  , stderr = c(
+    0.107002
+    , 0.0524792
+    # , manal$se
+  )
+  , type = "general_z"
+  , plot_type = "p_val"
+  , est_names = c("Chao et al. (2013)", "Schmidt et al. (2011)")
+  , n_values = 1e4L
+  # , conf_level = c(0.95)
+  , null_values = log(c(1))
+  , trans = "exp"
+  , alternative = "two_sided"
+  , log_yaxis = FALSE
+  # , cut_logyaxis = 0.05
+  , xlab = "Risk ratio"
+  , xlim = log(c(0.9, 1.55))
+  , together = TRUE
+  , plot_p_limit = 1 - 0.9999
+  , plot_counternull = FALSE
+  , plot = TRUE
+)
+
+mus <- log(seq(1.0, 1.45, length = 1000))
+
+p_ed <- confMeta::p_edgington(
+  c(log(1.20), log(1.20))
+  , SEs = c(0.107002 , 0.0524792)
+  , mu = log(seq(1.0, 1.45, length = 1000))
+)
+
+meta_dat <- data.frame(
+  p_two = p_ed
+  , values = exp(mus)
+  , variable = "Meta-Analysis"
+)
+
+```
+
+
 ```{r}
 #| label: schmidt_chao_meta
 #| fig-cap: ""
@@ -644,40 +705,8 @@ schmidt <- conf_dist(
 #| out-width: 8.5in
 #| fig-asp: 0.706
 
-manal <- metafor::rma(
-  yi = c(log(1.20), log(1.20))
-  , vi = c(0.107002 , 0.0524792)^2
-  , method = "REML"
-  # , test = "knha"
-)
-
-schmidt_meta <- conf_dist(
-  estimate = c(
-    log(1.20)
-    , log(1.20)
-    , manal$b
-  )
-  , stderr = c(
-    0.107002
-    , 0.0524792
-    , manal$se
-  )
-  , type = "general_z"
-  , plot_type = "p_val"
-  , est_names = c("Chao et al. (2013)", "Schmidt et al. (2011)", "Meta-Analyis")
-  , n_values = 1e4L
-  # , conf_level = c(0.95)
-  , null_values = log(c(1))
-  , trans = "exp"
-  , alternative = "two_sided"
-  , log_yaxis = FALSE
-  , cut_logyaxis = 0.05
-  , xlab = "Risk ratio"
-  , xlim = log(c(0.9, 1.55))
-  , together = TRUE
-  , plot_p_limit = 1-0.9999
-  , plot_counternull = FALSE
-)
+schmidt_meta$plot + 
+  geom_line(data = meta_dat, aes(x = values, y = p_two), linewidth = 1.5)
 
 ```
 
