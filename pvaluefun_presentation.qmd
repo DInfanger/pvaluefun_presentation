@@ -41,9 +41,11 @@ editor_options:
 
 library(ggplot2)
 library(scales)
-library(metafor)
+# library(metafor)
 library(pvaluefunctions)
 library(parameters)
+library(confMeta)
+
 ```
 
 ## My promises
@@ -642,8 +644,6 @@ schmidt <- conf_dist(
 #| label: schmidt_chao_meta_preparation
 #| echo: false
 #| output: false
-
-library(ggplot2)
 
 # manal <- metafor::rma(
 #   yi = c(log(1.20), log(1.20))
