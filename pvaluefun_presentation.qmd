@@ -368,7 +368,7 @@ stama <- conf_dist(
 ```
 :::
 
-::: {.column width="35%"}
+::: {.column .fragment .incremental width="35%"}
 -   *All* possible confidence intervals (all confidence levels)
 -   *All* possible $p$-values (two- and one-sided)
 -   No arbitrary threshold such as $0.05$.
